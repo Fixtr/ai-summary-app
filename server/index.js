@@ -6,22 +6,31 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+
+/** middleware */
 app.use(cors());
 app.use(express.json());
 
+/** OpenAI client */
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+/** health check */
 app.get("/", (req, res) => {
   res.send("SERVER OK");
 });
 
+/** summarize API */
 app.post("/summarize", async (req, res) => {
+  console.log("✅ POST /summarize HIT");
+
   const { text } = req.body;
 
   if (!text || text.trim().length === 0) {
-    return res.status(400).json({ error: "요약할 텍스트가 필요합니다." });
+    return res.status(400).json({
+      error: "요약할 텍스트가 필요합니다."
+    });
   }
 
   try {
@@ -41,17 +50,21 @@ app.post("/summarize", async (req, res) => {
     });
 
     const summary =
-      response.output_text ||
-      response.output?.[0]?.content?.[0]?.text;
+      response.output_text ??
+      response.output?.[0]?.content?.[0]?.text ??
+      "요약 결과를 생성하지 못했습니다.";
 
     res.json({ summary });
   } catch (error) {
     console.error("🔥 OpenAI ERROR:", error);
-    res.status(500).json({ error: error.message || error.toString() });
+    res.status(500).json({
+      error: error.message || "AI 요약 중 오류 발생"
+    });
   }
 });
 
+/** server start */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
