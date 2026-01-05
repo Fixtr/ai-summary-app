@@ -42,8 +42,8 @@ app.post("/summarize", async (req, res) => {
 
     res.json({ summary });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "AI 요약 중 오류 발생" });
+    console.error("🔥 OpenAI ERROR:", error);
+    res.status(500).json({ error: error.message || error.toString() });
   }
 });
 
