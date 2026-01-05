@@ -22,6 +22,7 @@ app.get("/", (req, res) => {
 });
 
 /** summarize API */
+console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "EXISTS" : "MISSING");
 app.post("/summarize", async (req, res) => {
   console.log("✅ POST /summarize HIT");
 
